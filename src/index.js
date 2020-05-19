@@ -1,14 +1,20 @@
 const express = require('express')
 const app = express()
 const axios = require('axios')
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+
+dotenv.config()
+
+//DB connection
+const db = process.env.MONGODB_URI
+mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err))
 
 function getApiUrl (name) {
   return `https://api.tibiadata.com/v2/characters/${name}.json`
 }
-
-app.get('/', function (req, res) {
-  res.send('hello world')
-})
 
 app.post('/player/:name', async function (req, res) {
   const name = req.params.name
