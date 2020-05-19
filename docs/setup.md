@@ -12,6 +12,8 @@ Clone o projeto usando o terminal.
 git clone [https ou ssh]
 ```
 
+> Caso não tenha as configurado sua chave SSH, [clique aqui](ssh.md).
+
 Entre na pasta.
 
 ```bash
