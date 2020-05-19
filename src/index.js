@@ -31,6 +31,6 @@ app.post('/player/:name', async function (req, res) {
   }
 })
 
-app.listen(443)
+app.listen(process.env.PORT || 443)
 
 console.log('Server started')
