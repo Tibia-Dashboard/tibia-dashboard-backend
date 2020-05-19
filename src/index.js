@@ -22,15 +22,13 @@ app.post('/player/:name', async function (req, res) {
   // Retornar player
 
   if (response.data.characters.hasOwnProperty('error')) {
-
-    res.status(404).send('Personagem não existe')
-
+    res.status(404).send({ 
+      type: 'PLAYER_NOT_FOUND',
+      message: 'Character not found',
+    })
   } else {
-
     res.send(response.data)
-
   }
-  
 })
 
 app.listen(3000)
