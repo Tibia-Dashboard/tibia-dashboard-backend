@@ -37,6 +37,6 @@ app.post('/player/:name', async function (req, res) {
   }
 })
 
-app.listen(process.env.PORT || 443)
+const port = process.env.PORT || 443
 
-console.log('Server started')
+app.listen(port, () => console.log(`Server running on port ${port}.`))
