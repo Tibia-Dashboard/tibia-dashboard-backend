@@ -20,7 +20,15 @@ app.post('/player/:name', async function (req, res) {
   // TODO: Salvar no banco de dados
 
   // Retornar player
-  res.send(response.data)
+
+  if (response.data.characters.hasOwnProperty('error')) {
+    res.status(404).send({ 
+      type: 'PLAYER_NOT_FOUND',
+      message: 'Character not found',
+    })
+  } else {
+    res.send(response.data)
+  }
 })
 
 app.listen(3000)
