@@ -3,7 +3,8 @@ const app = express()
 const axios = require('axios')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-const Character = require('./Models/Character')
+const CharacterLog = require('./models/CharacterLog')
+const Character = require('./models/Character')
 
 dotenv.config()
 
@@ -16,6 +17,14 @@ mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
 function getApiUrl (name) {
   return `https://api.tibiadata.com/v2/characters/${name}.json`
 }
+
+
+app.post('/log', (req, res) => {
+
+  
+
+})
+
 
 app.post('/player/:name', async function (req, res) {
   const name = req.params.name
@@ -34,26 +43,37 @@ app.post('/player/:name', async function (req, res) {
 
     // TODO: Salvar no banco de dados
     const charName = response.data.characters.data.name
-    Character.findOne({"characters.data.name" : charName})
-    .then(character => {
-      if (character) {
-        res.status(400).send({
-          type: 'CHARACTER_ALREADY_EXISTS',
-          message: 'Character already exists',
+
+    Character.findOneAndUpdate({name: charName}, {$set: {name: charName}} ,{upsert: true, new: true, useFindAndModify: false})
+      .then(character => {
+        res.send(character)
+      })
+      .catch(error => {
+         res.status(500).send({
+            type: 'INTERNAL_ERROR',
+            message: 'Not possible to process your request. Try again later.',
+          })
         })
-      } else {
-        const newCharacter = new Character(response.data)
-        newCharacter.save()
-          .then(character => res.send(character))
-          .catch(error => res.send({
-            type: 'ERROR',
-           message: error,
-          }))        
-      }
-    })
 
-    // const newCharacter = new Character(response.data)
-
+    // CharacterLog.findOne({"characters.data.name" : charName})
+    // .then(character => {
+    //   if (character) {
+    //     res.status(400).send({
+    //       type: 'CHARACTER_ALREADY_EXISTS',
+    //       message: 'Character already exists',
+    //     })
+    //   } else {
+    //     const newCharacter = new CharacterLog({
+    //       log: response.data
+    //     })
+    //     newCharacter.save()
+    //       .then(character => res.send(character))
+    //       .catch(error => res.send({
+    //         type: 'ERROR',
+    //        message: error,
+    //       }))        
+    //   }
+    // })
   }
 })
 
