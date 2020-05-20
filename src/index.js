@@ -3,6 +3,7 @@ const app = express()
 const axios = require('axios')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
+const Character = require('./Models/Character')
 
 dotenv.config()
 
@@ -23,17 +24,36 @@ app.post('/player/:name', async function (req, res) {
   // Buscar na Tibia API
   const response = await axios.get(url) // Espera a resposta
 
-  // TODO: Salvar no banco de dados
-
   // Retornar player
-
   if (response.data.characters.hasOwnProperty('error')) {
     res.status(404).send({ 
       type: 'PLAYER_NOT_FOUND',
       message: 'Character not found',
     })
   } else {
-    res.send(response.data)
+
+    // TODO: Salvar no banco de dados
+    const charName = response.data.characters.data.name
+    Character.findOne({"characters.data.name" : charName})
+    .then(character => {
+      if (character) {
+        res.status(400).send({
+          type: 'CHARACTER_ALREADY_EXISTS',
+          message: 'Character already exists',
+        })
+      } else {
+        const newCharacter = new Character(response.data)
+        newCharacter.save()
+          .then(character => res.send(character))
+          .catch(error => res.send({
+            type: 'ERROR',
+           message: error,
+          }))        
+      }
+    })
+
+    // const newCharacter = new Character(response.data)
+
   }
 })
 
