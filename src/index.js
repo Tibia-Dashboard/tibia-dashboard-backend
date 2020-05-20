@@ -10,18 +10,18 @@ dotenv.config()
 
 //DB connection
 const db = process.env.MONGODB_URI
-mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err))
 
-function getApiUrl (name) {
+function getApiUrl(name) {
   return `https://api.tibiadata.com/v2/characters/${name}.json`
 }
 
 
 app.post('/log', (req, res) => {
 
-  
+
 
 })
 
@@ -35,7 +35,7 @@ app.post('/player/:name', async function (req, res) {
 
   // Retornar player
   if (response.data.characters.hasOwnProperty('error')) {
-    res.status(404).send({ 
+    res.status(404).send({
       type: 'PLAYER_NOT_FOUND',
       message: 'Character not found',
     })
@@ -44,16 +44,26 @@ app.post('/player/:name', async function (req, res) {
     // TODO: Salvar no banco de dados
     const charName = response.data.characters.data.name
 
-    Character.findOneAndUpdate({name: charName}, {$set: {name: charName}} ,{upsert: true, new: true, useFindAndModify: false})
+    Character.findOneAndUpdate({
+      name: charName
+    }, {
+      $set: { 
+        name: charName 
+      }
+    }, {
+      upsert: true, 
+      new: true, 
+      useFindAndModify: false
+    })
       .then(character => {
         res.send(character)
       })
       .catch(error => {
-         res.status(500).send({
-            type: 'INTERNAL_ERROR',
-            message: 'Not possible to process your request. Try again later.',
-          })
+        res.status(500).send({
+          type: 'INTERNAL_ERROR',
+          message: 'Not possible to process your request. Try again later.',
         })
+      })
 
     // CharacterLog.findOne({"characters.data.name" : charName})
     // .then(character => {
