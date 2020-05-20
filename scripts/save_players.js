@@ -2,7 +2,7 @@ const fs = require('fs')
 const axios = require('axios')
 
 const players = fs
-  .readFileSync('./players.txt', { encoding: 'utf-8' })
+  .readFileSync('./scripts/players.txt', { encoding: 'utf-8' })
   .split(/\n/)
 
 const savePlayer = async (name) => {
