@@ -19,7 +19,7 @@ function getApiUrl(name) {
 }
 
 
-app.post('/log', async (req, res) => {
+app.get('/log/update', async (req, res) => {
 
   const characters = await Character.find()
   const results = {}
