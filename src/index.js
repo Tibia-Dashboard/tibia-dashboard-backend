@@ -44,26 +44,19 @@ app.post('/player/:name', async function (req, res) {
     // TODO: Salvar no banco de dados
     const charName = response.data.characters.data.name
 
-    Character.findOneAndUpdate({
-      name: charName
-    }, {
-      $set: { 
-        name: charName 
-      }
-    }, {
-      upsert: true, 
-      new: true, 
-      useFindAndModify: false
+    Character.findOneAndUpdate(
+      { name: charName },
+      { $set: { name: charName } }, 
+      { upsert: true, new: true, useFindAndModify: false}
+    ).then(character => {
+      res.send(character)
     })
-      .then(character => {
-        res.send(character)
+    .catch(error => {
+      res.status(500).send({
+        type: 'INTERNAL_ERROR',
+        message: 'Not possible to process your request. Try again later.',
       })
-      .catch(error => {
-        res.status(500).send({
-          type: 'INTERNAL_ERROR',
-          message: 'Not possible to process your request. Try again later.',
-        })
-      })
+    })
 
     // CharacterLog.findOne({"characters.data.name" : charName})
     // .then(character => {
