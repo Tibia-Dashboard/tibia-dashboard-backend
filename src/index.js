@@ -19,9 +19,35 @@ function getApiUrl(name) {
 }
 
 
-app.post('/log', (req, res) => {
+app.post('/log', async (req, res) => {
 
+  const characters = await Character.find()
+  const results = {}
 
+  for (let i = 0; i < characters.length; i++) {
+    try {
+      const name = characters[i].name
+      const url = getApiUrl(name)
+
+      // Buscar na Tibia API
+      const response = await axios.get(url) // Espera a resposta
+
+      const newCharacterLog = new CharacterLog({
+        character: characters[i]._id,
+        log: response.data
+      })
+      await newCharacterLog.save()
+      results[name] = true
+    } catch (error) {
+      results[name] = false
+    }
+  }
+
+  res.send({
+    successes: Object.values(results).filter(status => status).length,
+    failures: Object.values(results).filter(status => !status).length,
+    players: results, 
+  })
 
 })
 
@@ -46,37 +72,19 @@ app.post('/player/:name', async function (req, res) {
 
     Character.findOneAndUpdate(
       { name: charName },
-      { $set: { name: charName } }, 
-      { upsert: true, new: true, useFindAndModify: false}
+      { $set: { name: charName } },
+      { upsert: true, new: true, useFindAndModify: false }
     ).then(character => {
       res.send(character)
     })
-    .catch(error => {
-      res.status(500).send({
-        type: 'INTERNAL_ERROR',
-        message: 'Not possible to process your request. Try again later.',
+      .catch(error => {
+        res.status(500).send({
+          type: 'INTERNAL_ERROR',
+          message: 'Not possible to process your request. Try again later.',
+        })
       })
-    })
 
-    // CharacterLog.findOne({"characters.data.name" : charName})
-    // .then(character => {
-    //   if (character) {
-    //     res.status(400).send({
-    //       type: 'CHARACTER_ALREADY_EXISTS',
-    //       message: 'Character already exists',
-    //     })
-    //   } else {
-    //     const newCharacter = new CharacterLog({
-    //       log: response.data
-    //     })
-    //     newCharacter.save()
-    //       .then(character => res.send(character))
-    //       .catch(error => res.send({
-    //         type: 'ERROR',
-    //        message: error,
-    //       }))        
-    //   }
-    // })
+
   }
 })
 
