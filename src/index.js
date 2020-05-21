@@ -18,6 +18,14 @@ function getApiUrl(name) {
   return `https://api.tibiadata.com/v2/characters/${name}.json`
 }
 
+async function searchLogByCharacterId(id) {
+  return CharacterLog.find({"character": id})
+}
+
+//Ping test
+app.get('/', (req, res) => {
+  res.send('Pong.')
+})
 
 app.get('/log/update', async (req, res) => {
 
@@ -31,6 +39,18 @@ app.get('/log/update', async (req, res) => {
 
       // Buscar na Tibia API
       const response = await axios.get(url) // Espera a resposta
+
+      // //Offline check
+      // const status = response.data.characters.data.status
+
+      // if (status == "offline") {
+      //   CharacterLog.findOne({"log.characters.data.name": name})
+      //   .then(charLog => {
+      //     if (charLog.log.characters.data.status == "offline"){
+      //       throw name
+      //     }
+      //   })
+      // }
 
       const newCharacterLog = new CharacterLog({
         character: characters[i]._id,
@@ -51,6 +71,22 @@ app.get('/log/update', async (req, res) => {
 
 })
 
+//Busca Logs do Personagem
+app.get('/log/:name', async (req, res) => {
+  const name = req.params.name
+
+  Character.findOne({name})
+    .then(async charId =>{
+      const result = await searchLogByCharacterId(charId._id)
+      res.send(result)
+    })
+    .catch(error => {
+      res.status(500).send({
+        type: 'INTERNAL_ERROR',
+        message: 'Not possible to process your request. Try again later.',
+      })
+    })
+  })
 
 app.post('/player/:name', async function (req, res) {
   const name = req.params.name
