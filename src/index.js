@@ -19,6 +19,11 @@ function getApiUrl(name) {
 }
 
 
+//Ping test
+app.get('/', (req, res) => {
+  res.send('Pong.')
+})
+
 app.get('/log/update', async (req, res) => {
 
   const characters = await Character.find()
