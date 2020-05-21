@@ -37,6 +37,17 @@ app.get('/log/update', async (req, res) => {
       // Buscar na Tibia API
       const response = await axios.get(url) // Espera a resposta
 
+      const status = response.data.characters.data.status
+
+      if (status == "offline") {
+        CharacterLog.findOne({"log.characters.data.name": name})
+        .then(charLog => {
+          if (charLog.log.characters.data.status == "offline"){
+            continue
+          }
+        })
+      }
+
       const newCharacterLog = new CharacterLog({
         character: characters[i]._id,
         log: response.data
@@ -55,7 +66,6 @@ app.get('/log/update', async (req, res) => {
   })
 
 })
-
 
 app.post('/player/:name', async function (req, res) {
   const name = req.params.name
