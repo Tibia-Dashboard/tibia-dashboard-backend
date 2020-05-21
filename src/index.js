@@ -18,11 +18,8 @@ function getApiUrl(name) {
   return `https://api.tibiadata.com/v2/characters/${name}.json`
 }
 
-async function searchLogByCharId(id) {
+async function searchLogByCharacterId(id) {
   return CharacterLog.find({"character": id})
-    .then(logs => {
-      return logs
-    })
 }
 
 //Ping test
@@ -43,9 +40,9 @@ app.get('/log/update', async (req, res) => {
       // Buscar na Tibia API
       const response = await axios.get(url) // Espera a resposta
 
-      const status = response.data.characters.data.status
-
       // //Offline check
+      // const status = response.data.characters.data.status
+
       // if (status == "offline") {
       //   CharacterLog.findOne({"log.characters.data.name": name})
       //   .then(charLog => {
@@ -62,7 +59,7 @@ app.get('/log/update', async (req, res) => {
       await newCharacterLog.save()
       results[name] = true
     } catch (error) {
-        results[name] = false
+      results[name] = false
     }
   }
 
@@ -75,12 +72,12 @@ app.get('/log/update', async (req, res) => {
 })
 
 //Busca Logs do Personagem
-app.get('/character/:name', async (req, res) => {
+app.get('/log/:name', async (req, res) => {
   const name = req.params.name
 
   Character.findOne({name})
     .then(async charId =>{
-      const result = await searchLogByCharId(charId._id)
+      const result = await searchLogByCharacterId(charId._id)
       res.send(result)
     })
     .catch(error => {
