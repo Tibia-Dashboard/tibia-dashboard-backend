@@ -5,8 +5,12 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const CharacterLog = require('./models/CharacterLog')
 const Character = require('./models/Character')
+const helmet = require('helmet')
+const compression = require('compression')
 
 dotenv.config()
+app.use(helmet())
+app.use(compression())
 
 //DB connection
 const db = process.env.MONGODB_URI
