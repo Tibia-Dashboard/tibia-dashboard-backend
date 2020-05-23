@@ -1,5 +1,5 @@
 build:
-	docker build -t tibia-dashboard-backend .
+	docker-compose build
 
 run:
-	docker run -d -p 3000:3000 tibia-dashboard-backend
+	docker-compose up
