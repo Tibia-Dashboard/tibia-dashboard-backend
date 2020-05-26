@@ -1,0 +1,51 @@
+version: '3'
+services:
+    nginx:
+        build:
+            dockerfile: ./docker/nginx.dockerfile
+            context: .
+        image: tibia-dashboard/nginx
+        container_name: nginx
+        ports:
+            - "80:80"
+        networks: 
+            - tibia-dashboard-network
+        depends_on:
+            - node1
+            - node2
+            - node3
+
+    node1:
+        build:
+            dockerfile: ./docker/tibia-dashboard-backend.dockerfile
+            context: .
+        image: tibia-dashboard-backend
+        container_name: tibia-dashboard-backend-1
+        ports:
+            - 3000
+        networks: 
+            - tibia-dashboard-network
+    node2:
+        build:
+            dockerfile: ./docker/tibia-dashboard-backend.dockerfile
+            context: .
+        image: tibia-dashboard-backend
+        container_name: tibia-dashboard-backend-2
+        ports:
+            - 3000
+        networks: 
+            - tibia-dashboard-network
+    node3:
+        build:
+            dockerfile: ./docker/tibia-dashboard-backend.dockerfile
+            context: .
+        image: tibia-dashboard-backend
+        container_name: tibia-dashboard-backend-3
+        ports:
+            - 3000
+        networks: 
+            - tibia-dashboard-network
+
+networks:
+    tibia-dashboard-network:
+        driver: bridge
